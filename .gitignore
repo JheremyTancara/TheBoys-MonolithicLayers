@@ -17,3 +17,5 @@
 
 # Env file
 .env
+
+mysql/

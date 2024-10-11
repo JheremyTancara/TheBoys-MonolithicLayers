@@ -1,9 +1,13 @@
 # Streaming Project
 
 ## Description
-This project is an API for a streaming system that uses Entity Framework Core to interact with a MySQL database. It allows for the management of users and movies, as well as functionalities related to managing watchlists.
+
+This project is an API for a streaming system that uses Entity Framework Core
+to interact with a MySQL database. It allows for the management of users and
+movies, as well as functionalities related to managing watchlists.
 
 ## Prerequisites
+
 Make sure you have the following components installed on your machine:
 
 - [.NET SDK](https://dotnet.microsoft.com/download) (version 6.0 or higher)
@@ -13,27 +17,17 @@ Make sure you have the following components installed on your machine:
 ## Project Setup
 
 ### 1. Clone the repository
-  ```bash
-  git clone https://github.com/JheremyTancara/TheBoys-MonolithicLayers/settings/access?guidance_task=
-  cd TheBoys-MonolithicLayers
-  ```
 
-### 2. Configure the credentials in `appsettings.json`
+```bash
+    git clone https://github.com/JheremyTancara/TheBoys-MonolithicLayers.git
+    cd TheBoys-MonolithicLayers
+```
 
-  Open the `appsettings.json` file and add the connection string with your MySQL credentials:
+### 2. Start MySQL Server with docker
 
-  ```json
-  {
-    "ConnectionStrings": {
-      "MySQLConnection": "Server=localhost;Port=NUMBER_PORT;Database=STREAMING_PROJECT;User Id=NAME_USER;Password=PASSWORD"
-    },
-  }
-  ```
-
-Replace the following values:
-- `NUMBER_PORT`: The port of your MySQL server (default is 3306).
-- `NAME_USER`: Your MySQL username.
-- `PASSWORD`: Your MySQL password.
+```bash
+docker compose up -d
+```
 
 ### 3. Update the database
 
@@ -51,4 +45,4 @@ To start the application, use the following command:
 dotnet run
 ```
 
-The API will be available at `https://localhost:5270/swagger/index.html` 
+The API will be available at `https://localhost:5270/swagger/index.html`
