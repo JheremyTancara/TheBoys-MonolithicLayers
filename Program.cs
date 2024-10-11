@@ -44,6 +44,9 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25))));
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<MovieService>();
+builder.Services.AddScoped<DirectorService>();
+builder.Services.AddScoped<ActorService>();
 
 var app = builder.Build();
 

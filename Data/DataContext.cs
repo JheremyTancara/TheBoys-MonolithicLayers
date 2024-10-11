@@ -7,6 +7,8 @@ namespace Api.Data
     {
         public DbSet<User> Users => Set<User>();
         public DbSet<Movie> Movies => Set<Movie>();
+        public DbSet<Actor> Actors => Set<Actor>();
+        public DbSet<Director> Directors => Set<Director>();
 
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)

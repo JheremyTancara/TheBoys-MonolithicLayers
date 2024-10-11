@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
-namespace Api.Models.DTOs
+
+namespace Api.DTOs
 
 {
     public class ActorDTO

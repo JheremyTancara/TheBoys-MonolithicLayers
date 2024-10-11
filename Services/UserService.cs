@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace Api.Services
+
 {
     public class UserService
     {
@@ -81,10 +82,10 @@ namespace Api.Services
         return await _context.Users.CountAsync();
       }
 
-      public async Task<bool> IsBrandNameUnique(string productName)
+      public async Task<bool> IsBrandNameUnique(string userName)
       {
-      var products = await _context.Users.AsNoTracking().ToListAsync();
-      return products.Any(b => string.Equals(b.Username, productName, StringComparison.OrdinalIgnoreCase));
+      var users = await _context.Users.AsNoTracking().ToListAsync();
+      return users.Any(b => string.Equals(b.Username, userName, StringComparison.OrdinalIgnoreCase));
       }
       
       public static DateTime ConvertToDateTime(string dateString)
