@@ -11,5 +11,7 @@ public class Movie
     public string Description { get; set; } = string.Empty;
     public List<Actor>? Cast { get; set; }
     public Director? Director { get; set; } 
+    public string ImageUrl { get; set; } = string.Empty;
     public string TrailerUrl { get; set; } = string.Empty;
+    public ContentType Type { get; set; }
 }

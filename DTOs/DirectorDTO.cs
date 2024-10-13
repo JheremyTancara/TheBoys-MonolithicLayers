@@ -29,7 +29,7 @@ namespace Api.DTOs
         public string Bio { get; set; } = string.Empty;
 
         [Required("ProfilePictureUrl")]
-        [StringValue("Bio")]
+        [StringValue("ProfilePictureUrl")]
         [ImageUrl("ProfilePictureUrl")]
         [LengthRange("ProfilePictureUrl", 3, 2083)]
         public string ProfilePictureUrl { get; set; } = string.Empty;

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241011162121_InitialCreate")]
+    [Migration("20241013131202_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -59,7 +59,7 @@ namespace backend.Migrations
 
                     b.HasIndex("MovieID");
 
-                    b.ToTable("Actor");
+                    b.ToTable("Actors");
                 });
 
             modelBuilder.Entity("Api.Models.Director", b =>
@@ -90,7 +90,7 @@ namespace backend.Migrations
 
                     b.HasKey("DirectorID");
 
-                    b.ToTable("Director");
+                    b.ToTable("Directors");
                 });
 
             modelBuilder.Entity("Api.Models.Movie", b =>
@@ -108,11 +108,15 @@ namespace backend.Migrations
                     b.Property<int?>("DirectorID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
+                    b.Property<double>("Duration")
+                        .HasColumnType("double");
 
                     b.Property<int>("Genre")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -127,6 +131,9 @@ namespace backend.Migrations
                     b.Property<string>("TrailerUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("MovieID");
 

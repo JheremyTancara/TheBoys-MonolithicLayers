@@ -35,6 +35,50 @@ namespace Api.Controllers
             return Ok(movie);
         }
 
+        [HttpGet("by-title/{title}", Name = "GetMovieByTitle")]
+        public async Task<ActionResult<Movie>> GetByTitle(string title)
+        {
+            var movie = await _service.GetByTitle(title);
+
+            if (movie == null)
+            {
+                return NotFound(ErrorUtilities.valueNotFound("Movie", title));
+            }
+
+            return Ok(movie);
+        }
+
+        [HttpGet("by-genre/{genre}", Name = "GetMoviesByGenre")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetByGenre(string genre)
+        {
+            var movies = await _service.GetByGenre(genre);
+
+            if (movies == null || !movies.Any())
+            {
+                return NotFound(ErrorUtilities.valueNotFound("Movies", genre));
+            }
+            
+            return Ok(movies);
+        }
+        
+        [HttpGet("by-content-type/{contentType}", Name = "GetMoviesByContentType")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetByContentType(string contentType)
+        {
+            if (string.IsNullOrWhiteSpace(contentType))
+            {
+                return BadRequest("El tipo de contenido no puede estar vacío.");
+            }
+
+            var movies = await _service.GetByContentType(contentType);
+
+            if (movies == null || !movies.Any())
+            {
+                return NotFound(ErrorUtilities.valueNotFound("Movies", contentType));
+            }
+
+            return Ok(movies);
+        }
+
         [HttpPost(Name = "AddMovie")]
         public async Task<IActionResult> Create([FromBody] MovieDTO movieDTO)
         {

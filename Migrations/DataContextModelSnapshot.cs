@@ -111,6 +111,10 @@ namespace backend.Migrations
                     b.Property<int>("Genre")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -124,6 +128,9 @@ namespace backend.Migrations
                     b.Property<string>("TrailerUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("MovieID");
 

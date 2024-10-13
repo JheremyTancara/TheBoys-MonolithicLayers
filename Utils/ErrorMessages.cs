@@ -10,6 +10,11 @@ namespace Api.Utilities
         return new NotFoundObjectResult(new { message = $"The {value} with ID = {id} doesn't exist." });
     }
 
+    public static string valueNotFound(string entity, string value)
+    {
+        return $"{entity} con el campo '{value}' no encontrado.";
+    }
+
     public static NotFoundObjectResult IdPositive(int id)
     {
         return new NotFoundObjectResult(new { message = $"ID = {id} must be a positive value greater than 0." });

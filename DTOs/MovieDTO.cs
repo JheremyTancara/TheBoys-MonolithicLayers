@@ -47,10 +47,22 @@ namespace Api.DTOs
         [LengthRange("Description", 3, 150)]
         public string Description { get; set; } = string.Empty;
 
+        [Required("ImageUrl")]
+        [StringValue("ImageUrl")]
+        [ImageUrl("ImageUrl")]
+        [LengthRange("ImageUrl", 3, 2083)]
+        public string ImageUrl { get; set; } = string.Empty;
+
         [Required("TrailerUrl")]
         [StringValue("TrailerUrl")]
         [YouTubeUrl("TrailerUrl")]
         [LengthRange("TrailerUrl", 3, 2083)]
         public string TrailerUrl { get; set; } = string.Empty;
+
+        [Required("Type")]
+        [StringValue("Type")]
+        [NoSpecialCharacters("Type")]
+        [WithinEnumValues(typeof(ContentType), "Type")]
+        public string Type { get; set; } = string.Empty;
     }
 }

@@ -16,7 +16,7 @@ namespace backend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Director",
+                name: "Directors",
                 columns: table => new
                 {
                     DirectorID = table.Column<int>(type: "int", nullable: false)
@@ -32,7 +32,7 @@ namespace backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Director", x => x.DirectorID);
+                    table.PrimaryKey("PK_Directors", x => x.DirectorID);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -68,27 +68,30 @@ namespace backend.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Genre = table.Column<int>(type: "int", nullable: false),
                     ReleaseDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Duration = table.Column<int>(type: "int", nullable: false),
+                    Duration = table.Column<double>(type: "double", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DirectorID = table.Column<int>(type: "int", nullable: true),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     TrailerUrl = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movies", x => x.MovieID);
                     table.ForeignKey(
-                        name: "FK_Movies_Director_DirectorID",
+                        name: "FK_Movies_Directors_DirectorID",
                         column: x => x.DirectorID,
-                        principalTable: "Director",
+                        principalTable: "Directors",
                         principalColumn: "DirectorID");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Actor",
+                name: "Actors",
                 columns: table => new
                 {
                     ActorID = table.Column<int>(type: "int", nullable: false)
@@ -106,9 +109,9 @@ namespace backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Actor", x => x.ActorID);
+                    table.PrimaryKey("PK_Actors", x => x.ActorID);
                     table.ForeignKey(
-                        name: "FK_Actor_Movies_MovieID",
+                        name: "FK_Actors_Movies_MovieID",
                         column: x => x.MovieID,
                         principalTable: "Movies",
                         principalColumn: "MovieID");
@@ -191,8 +194,8 @@ namespace backend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Actor_MovieID",
-                table: "Actor",
+                name: "IX_Actors_MovieID",
+                table: "Actors",
                 column: "MovieID");
 
             migrationBuilder.CreateIndex(
@@ -220,7 +223,7 @@ namespace backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Actor");
+                name: "Actors");
 
             migrationBuilder.DropTable(
                 name: "UserRecommendedMovies");
@@ -238,7 +241,7 @@ namespace backend.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Director");
+                name: "Directors");
         }
     }
 }

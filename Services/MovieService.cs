@@ -37,7 +37,9 @@ namespace Api.Services
         newMovie.Rating = ConvertToRating(newMovieDTO.Rating);
         newMovie.Title = newMovieDTO.Title;
         newMovie.Description = newMovieDTO.Description;
+        newMovie.ImageUrl = newMovieDTO.ImageUrl;
         newMovie.TrailerUrl = newMovieDTO.TrailerUrl;
+        newMovie.Type = ConvertToContentType(newMovieDTO.Type);
 
         _context.Movies.Add(newMovie);
         await _context.SaveChangesAsync();
@@ -58,7 +60,9 @@ namespace Api.Services
         existingMovie.Rating = ConvertToRating(movieDTO.Rating);
         existingMovie.Title = movieDTO.Title;
         existingMovie.Description = movieDTO.Description;
+        existingMovie.ImageUrl = movieDTO.ImageUrl;
         existingMovie.TrailerUrl = movieDTO.TrailerUrl;
+        existingMovie.Type = ConvertToContentType(movieDTO.Type);
 
         await _context.SaveChangesAsync();
       }
@@ -85,7 +89,39 @@ namespace Api.Services
       var movies = await _context.Movies.AsNoTracking().ToListAsync();
       return movies.Any(b => string.Equals(b.Title, movieTitle, StringComparison.OrdinalIgnoreCase));
       }
-      
+
+      public async Task<Movie?> GetByTitle(string title) 
+      {
+          return await _context.Movies
+              .FirstOrDefaultAsync(m => m.Title.ToLower() == title.ToLower());
+      }
+
+      public async Task<IEnumerable<Movie>> GetByGenre(string genre)
+      {
+          if (Enum.TryParse<Genre>(genre, true, out var parsedGenre))
+          {
+              return await _context.Movies
+                  .AsNoTracking()
+                  .Where(m => m.Genre == parsedGenre)
+                  .ToListAsync();
+          }
+          
+          return Enumerable.Empty<Movie>();
+      }
+
+      public async Task<IEnumerable<Movie>> GetByContentType(string contentType)
+      {
+          if (Enum.TryParse<ContentType>(contentType, true, out var parsedContentType))
+          {
+              return await _context.Movies
+                  .AsNoTracking()
+                  .Where(m => m.Type == parsedContentType)
+                  .ToListAsync();
+          }
+          
+          return Enumerable.Empty<Movie>();
+      }
+
       public static DateTime ConvertToDateTime(string dateString)
       {
           if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
@@ -114,6 +150,16 @@ namespace Api.Services
           }
 
           throw new ArgumentException($"'{ratingString}' is not a valid Rating.");
+      }
+
+      public static ContentType ConvertToContentType(string contentTypeString)
+      {
+          if (Enum.TryParse<ContentType>(contentTypeString, true, out var contentType))
+          {
+              return contentType;
+          }
+
+          throw new ArgumentException($"'{contentTypeString}' is not a valid Rating.");
       }
 
       public static double ConvertToMinutes(string time)
