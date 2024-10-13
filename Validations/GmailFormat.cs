@@ -1,24 +1,25 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 using Api.Utilities;
 
 namespace Api.Validation
 
 {
-    public class NoNumbers : ValidationAttribute
+    public class GmailFormat : ValidationAttribute
     {
-        public NoNumbers(string value)
+        private readonly string _value;
+
+        public GmailFormat(string value)
         {
-            ErrorMessage = ErrorUtilities.NoNumbers(value);
+            _value = value;
+            ErrorMessage = ErrorUtilities.InvalidGmailFormat(value);
         }
 
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is string stringValue)
+            if (value is string email)
             {
-                var regex = new Regex("^[a-zA-Z ]*$");
-
-                if (!regex.IsMatch(stringValue))
+                // Verificar que el email termina en @gmail.com
+                if (!email.EndsWith("@gmail.com"))
                 {
                     return new ValidationResult(ErrorMessage);
                 }

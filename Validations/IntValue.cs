@@ -1,24 +1,21 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 using Api.Utilities;
 
 namespace Api.Validation
 
 {
-    public class NoNumbers : ValidationAttribute
+    public class IntValue : ValidationAttribute
     {
-        public NoNumbers(string value)
+        public IntValue(string value)
         {
-            ErrorMessage = ErrorUtilities.NoNumbers(value);
+            ErrorMessage = ErrorUtilities.ValidateInt(value);
         }
 
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is string stringValue)
+            if (value != null)
             {
-                var regex = new Regex("^[a-zA-Z ]*$");
-
-                if (!regex.IsMatch(stringValue))
+                if (value is not int)
                 {
                     return new ValidationResult(ErrorMessage);
                 }

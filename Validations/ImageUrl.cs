@@ -5,20 +5,23 @@ using Api.Utilities;
 namespace Api.Validation
 
 {
-    public class NoNumbers : ValidationAttribute
+    public class ImageUrl : ValidationAttribute
     {
-        public NoNumbers(string value)
+        private readonly string _propertyName;
+
+        public ImageUrl(string propertyName)
         {
-            ErrorMessage = ErrorUtilities.NoNumbers(value);
+            _propertyName = propertyName;
+            ErrorMessage = ErrorUtilities.InvalidImageUrl(propertyName); 
         }
 
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is string stringValue)
+            if (value is string url)
             {
-                var regex = new Regex("^[a-zA-Z ]*$");
+                var regex = new Regex(@"^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp))$", RegexOptions.IgnoreCase);
 
-                if (!regex.IsMatch(stringValue))
+                if (!regex.IsMatch(url))
                 {
                     return new ValidationResult(ErrorMessage);
                 }

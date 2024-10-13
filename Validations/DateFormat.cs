@@ -1,24 +1,22 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
+using System.Globalization;
 using Api.Utilities;
 
 namespace Api.Validation
 
 {
-    public class NoNumbers : ValidationAttribute
+    public class DateFormat : ValidationAttribute
     {
-        public NoNumbers(string value)
+        public DateFormat(string value)
         {
-            ErrorMessage = ErrorUtilities.NoNumbers(value);
+            ErrorMessage = ErrorUtilities.InvalidDateFormat(value);
         }
 
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is string stringValue)
+            if (value is string dateString)
             {
-                var regex = new Regex("^[a-zA-Z ]*$");
-
-                if (!regex.IsMatch(stringValue))
+                if (!DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
                 {
                     return new ValidationResult(ErrorMessage);
                 }

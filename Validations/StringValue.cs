@@ -1,20 +1,24 @@
 using System.ComponentModel.DataAnnotations;
 using Api.Utilities;
 
-public class StringValue : ValidationAttribute
-{
-    public StringValue(string value)
-    {
-        ErrorMessage = ErrorUtilities.ValidateString(value);
-    }
+namespace Api.Validation
 
-    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
+{
+    public class StringValue : ValidationAttribute
     {
-        if (value != null && !(value is string))
+        public StringValue(string value)
         {
-            return new ValidationResult(ErrorMessage);
+            ErrorMessage = ErrorUtilities.ValidateString(value);
         }
 
-        return ValidationResult.Success!;
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value != null && !(value is string))
+            {
+                return new ValidationResult(ErrorMessage);
+            }
+
+            return ValidationResult.Success!;
+        }
     }
 }

@@ -5,20 +5,23 @@ using Api.Utilities;
 namespace Api.Validation
 
 {
-    public class NoNumbers : ValidationAttribute
+    public class TimeFormat : ValidationAttribute
     {
-        public NoNumbers(string value)
+        private readonly string _propertyName;
+
+        public TimeFormat(string propertyName)
         {
-            ErrorMessage = ErrorUtilities.NoNumbers(value);
+            _propertyName = propertyName;
+            ErrorMessage = ErrorUtilities.InvalidTimeFormat(propertyName);
         }
 
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is string stringValue)
+            if (value is string timeString)
             {
-                var regex = new Regex("^[a-zA-Z ]*$");
+                var regex = new Regex(@"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$", RegexOptions.IgnoreCase);
 
-                if (!regex.IsMatch(stringValue))
+                if (!regex.IsMatch(timeString))
                 {
                     return new ValidationResult(ErrorMessage);
                 }

@@ -33,7 +33,7 @@ namespace Api.Services
         newMovie.Title = newMovieDTO.Title;
         newMovie.Genre = ParseGenre(newMovieDTO.Genre);
         newMovie.ReleaseDate = ConvertToDateTime(newMovieDTO.ReleaseDate);
-        newMovie.Duration = newMovieDTO.Duration;
+        newMovie.Duration = ConvertToMinutes(newMovieDTO.Duration);
         newMovie.Rating = ConvertToRating(newMovieDTO.Rating);
         newMovie.Title = newMovieDTO.Title;
         newMovie.Description = newMovieDTO.Description;
@@ -54,7 +54,7 @@ namespace Api.Services
         existingMovie.Title = movieDTO.Title;
         existingMovie.Genre = ParseGenre(movieDTO.Genre);
         existingMovie.ReleaseDate = ConvertToDateTime(movieDTO.ReleaseDate);
-        existingMovie.Duration = movieDTO.Duration;
+        existingMovie.Duration = ConvertToMinutes(movieDTO.Duration);
         existingMovie.Rating = ConvertToRating(movieDTO.Rating);
         existingMovie.Title = movieDTO.Title;
         existingMovie.Description = movieDTO.Description;
@@ -115,5 +115,22 @@ namespace Api.Services
 
           throw new ArgumentException($"'{ratingString}' is not a valid Rating.");
       }
+
+      public static double ConvertToMinutes(string time)
+      {
+          string[] parts = time.Split(':');
+
+          if (parts.Length != 3)
+          {
+              throw new FormatException("The format must be HH:MM:SS");
+          }
+
+          int hours = int.Parse(parts[0]);
+          int minutes = int.Parse(parts[1]);
+          int seconds = int.Parse(parts[2]);
+
+          double totalMinutes = hours * 60 + minutes + (double)seconds / 60;
+          return Math.Round(totalMinutes, 2);
       }
+    }
 }

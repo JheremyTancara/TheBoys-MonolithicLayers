@@ -3,7 +3,7 @@ namespace Api.Models
 {
     public enum SubscriptionLevel
     {
-        Free,
-        Premium
+        Free = 1,
+        Premium = 2
     }
 }

@@ -2,25 +2,29 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Api.Utilities;
 
-public class NoSpecialCharacters : ValidationAttribute
+namespace Api.Validation
+
 {
-    public NoSpecialCharacters(string value)
+    public class NoSpecialCharacters : ValidationAttribute
     {
-        ErrorMessage = ErrorUtilities.NoSpecialCharacters(value);
-    }
-
-    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
-    {
-        if (value is string stringValue)
+        public NoSpecialCharacters(string value)
         {
-            var regex = new Regex("^[a-zA-Z0-9 ]*$");
-
-            if (!regex.IsMatch(stringValue))
-            {
-                return new ValidationResult(ErrorMessage);
-            }
+            ErrorMessage = ErrorUtilities.NoSpecialCharacters(value);
         }
 
-        return ValidationResult.Success!;
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
+        {
+            if (value is string stringValue)
+            {
+                var regex = new Regex("^[a-zA-Z0-9 ]*$");
+
+                if (!regex.IsMatch(stringValue))
+                {
+                    return new ValidationResult(ErrorMessage);
+                }
+            }
+
+            return ValidationResult.Success!;
+        }
     }
 }
