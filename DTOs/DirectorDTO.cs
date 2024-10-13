@@ -13,7 +13,6 @@ namespace Api.DTOs
         [StringValue("Name")]
         [NoSpecialCharacters("Name")]
         [NoNumbers("Name")]
-        [NoSpaces("Name")]
         [LengthRange("Name", 3, 40)]
         public string Name { get; set; } = string.Empty;
 

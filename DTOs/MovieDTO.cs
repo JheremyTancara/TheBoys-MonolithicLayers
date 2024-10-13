@@ -13,8 +13,6 @@ namespace Api.DTOs
         [Required("Title")]
         [StringValue("Title")]
         [NoSpecialCharacters("Title")]
-        [NoNumbers("Title")]
-        [NoSpaces("Title")]
         [LengthRange("Title", 3, 150)]
         public string Title { get; set; } = string.Empty;    
 
