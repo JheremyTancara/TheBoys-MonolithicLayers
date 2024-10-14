@@ -12,7 +12,7 @@ namespace Api.Utilities
 
     public static string valueNotFound(string entity, string value)
     {
-        return $"{entity} con el campo '{value}' no encontrado.";
+        return $"{entity} with the field '{value}'";
     }
 
     public static NotFoundObjectResult IdPositive(int id)
@@ -33,7 +33,9 @@ namespace Api.Utilities
     public static string ValidateString(string value) => $"This field needs ({value}) to be a String.";
 
     public static string ValidateInt(string value) => $"This field needs ({value}) to be a Int.";
-    
+
+    public static string ValidateDouble(string value) => $"The field '{value}' must be a valid double value.";
+
     public static string IntRangeErrorMessage(string value, int minValue, int maxValue) => $"The value for {value} must be between {minValue} and {maxValue}.";
 
     public static string RangeValueErrorMessageDecimal(double range1, double range2) => $"The number must be greater than or equal to ({range1}) and less than ({range2}).";
@@ -86,6 +88,11 @@ namespace Api.Utilities
     public static string LengthRangeErrorMessage(string value, int minLength, int maxLength)
     {
         return $"The length of '{value}' must be between {minLength} and {maxLength} characters.";
+    }
+
+    public static string DoubleRangeErrorMessage(string value, double min, double max)
+    {
+        return $"The field '{value}' must be between {min} and {max}.";
     }
   }
 }

@@ -18,8 +18,7 @@ namespace Api.DTOs
 
         [Required("Genre")]
         [StringValue("Genre")]
-        [NoSpecialCharacters("Genre")]
-        [WithinEnumValues(typeof(Genre), "Genre")]
+        [WithinListEnumValues(typeof(Genre), "Genre")]
         public string Genre { get; set; } = string.Empty;
 
         [Required("Genre")]
@@ -35,10 +34,9 @@ namespace Api.DTOs
         public string Duration { get; set; } = string.Empty;
 
         [Required("Rating")]
-        [StringValue("Rating")]
-        [NoSpecialCharacters("Rating")]
-        [WithinEnumValues(typeof(Rating), "Rating")]
-        public string Rating { get; set; } = string.Empty;
+        [DoubleValue("Rating")] 
+        [RangeDouble("Rating", 0.1, 10.0)]
+        public double Rating { get; set; }
 
         [Required("Description")]
         [StringValue("Description")]
@@ -62,5 +60,9 @@ namespace Api.DTOs
         [NoSpecialCharacters("Type")]
         [WithinEnumValues(typeof(ContentType), "Type")]
         public string Type { get; set; } = string.Empty;
+
+        [Required("Views")]
+        [IntValue("Views")]
+        public int Views { get; set; }
     }
 }

@@ -34,12 +34,13 @@ namespace Api.Services
         newMovie.Genre = ParseGenre(newMovieDTO.Genre);
         newMovie.ReleaseDate = ConvertToDateTime(newMovieDTO.ReleaseDate);
         newMovie.Duration = ConvertToMinutes(newMovieDTO.Duration);
-        newMovie.Rating = ConvertToRating(newMovieDTO.Rating);
+        newMovie.Rating = newMovieDTO.Rating;
         newMovie.Title = newMovieDTO.Title;
         newMovie.Description = newMovieDTO.Description;
         newMovie.ImageUrl = newMovieDTO.ImageUrl;
         newMovie.TrailerUrl = newMovieDTO.TrailerUrl;
         newMovie.Type = ConvertToContentType(newMovieDTO.Type);
+        newMovie.Views = newMovieDTO.Views;
 
         _context.Movies.Add(newMovie);
         await _context.SaveChangesAsync();
@@ -57,15 +58,31 @@ namespace Api.Services
         existingMovie.Genre = ParseGenre(movieDTO.Genre);
         existingMovie.ReleaseDate = ConvertToDateTime(movieDTO.ReleaseDate);
         existingMovie.Duration = ConvertToMinutes(movieDTO.Duration);
-        existingMovie.Rating = ConvertToRating(movieDTO.Rating);
+        existingMovie.Rating = movieDTO.Rating;
         existingMovie.Title = movieDTO.Title;
         existingMovie.Description = movieDTO.Description;
         existingMovie.ImageUrl = movieDTO.ImageUrl;
         existingMovie.TrailerUrl = movieDTO.TrailerUrl;
         existingMovie.Type = ConvertToContentType(movieDTO.Type);
+        existingMovie.Views = movieDTO.Views;
 
         await _context.SaveChangesAsync();
       }
+      }
+
+      public async Task UpdateViews(int id, int views)
+      {
+          var existingMovie = await GetByID(id);
+
+          if (existingMovie is not null)
+          {
+              existingMovie.Views = views;
+              await _context.SaveChangesAsync();
+          }
+          else
+          {
+              throw new KeyNotFoundException($"Movie with ID {id} not found.");
+          }
       }
 
       public async Task Delete(int id)
@@ -96,17 +113,25 @@ namespace Api.Services
               .FirstOrDefaultAsync(m => m.Title.ToLower() == title.ToLower());
       }
 
-      public async Task<IEnumerable<Movie>> GetByGenre(string genre)
+      public async Task<IEnumerable<Movie>> GetByGenres(string genreString)
       {
-          if (Enum.TryParse<Genre>(genre, true, out var parsedGenre))
+          List<Genre> genres;
+          try
           {
-              return await _context.Movies
-                  .AsNoTracking()
-                  .Where(m => m.Genre == parsedGenre)
-                  .ToListAsync();
+              genres = ParseGenre(genreString); 
           }
-          
-          return Enumerable.Empty<Movie>();
+          catch (ArgumentException ex)
+          {
+              return Enumerable.Empty<Movie>();
+          }
+
+          var movies = await _context.Movies
+              .AsNoTracking()
+              .ToListAsync(); 
+
+          return movies
+              .Where(m => m.Genre.Any(g => genres.Contains(g)))
+              .ToList();
       }
 
       public async Task<IEnumerable<Movie>> GetByContentType(string contentType)
@@ -129,28 +154,35 @@ namespace Api.Services
               return date; 
           }
           
-          throw new FormatException("La fecha no tiene un formato válido.");
+          throw new FormatException("The date is not in a valid format.");
       }
 
-      public static Genre ParseGenre(string genreString)
+      public static List<Genre> ParseGenre(string genreString)
       {
-          if (Enum.TryParse<Genre>(genreString, true, out var genre))
+          if (string.IsNullOrWhiteSpace(genreString))
+              throw new ArgumentException("Input string cannot be null or empty.");
+
+          var genreStrings = genreString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(s => s.Trim())
+                                        .ToList();
+
+          var genreList = new List<Genre>();
+
+          foreach (var genre in genreStrings)
           {
-              return genre;
+              if (Enum.TryParse<Genre>(genre, true, out var parsedGenre))
+              {
+                  genreList.Add(parsedGenre);
+              }
+              else
+              {
+                  throw new ArgumentException($"'{genre}' is not a valid Genre.");
+              }
           }
 
-          throw new ArgumentException($"'{genreString}' is not a valid Genre.");
+          return genreList;
       }
 
-      public static Rating ConvertToRating(string ratingString)
-      {
-          if (Enum.TryParse<Rating>(ratingString, true, out var rating))
-          {
-              return rating;
-          }
-
-          throw new ArgumentException($"'{ratingString}' is not a valid Rating.");
-      }
 
       public static ContentType ConvertToContentType(string contentTypeString)
       {
@@ -166,17 +198,17 @@ namespace Api.Services
       {
           string[] parts = time.Split(':');
 
-          if (parts.Length != 3)
+          if (parts.Length != 2)
           {
-              throw new FormatException("The format must be HH:MM:SS");
+              throw new FormatException("The format must be HH:MM");
           }
 
           int hours = int.Parse(parts[0]);
           int minutes = int.Parse(parts[1]);
-          int seconds = int.Parse(parts[2]);
 
-          double totalMinutes = hours * 60 + minutes + (double)seconds / 60;
+          double totalMinutes = hours * 60 + minutes;
           return Math.Round(totalMinutes, 2);
       }
+
     }
 }

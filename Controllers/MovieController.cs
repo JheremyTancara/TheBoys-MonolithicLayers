@@ -48,19 +48,19 @@ namespace Api.Controllers
             return Ok(movie);
         }
 
-        [HttpGet("by-genre/{genre}", Name = "GetMoviesByGenre")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetByGenre(string genre)
+        [HttpGet("by-genres/{genres}", Name = "GetMoviesByGenres")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetByGenres(string genres)
         {
-            var movies = await _service.GetByGenre(genre);
+            var movies = await _service.GetByGenres(genres);
 
             if (movies == null || !movies.Any())
             {
-                return NotFound(ErrorUtilities.valueNotFound("Movies", genre));
+                return NotFound(ErrorUtilities.valueNotFound("Movies", genres));
             }
             
             return Ok(movies);
         }
-        
+
         [HttpGet("by-content-type/{contentType}", Name = "GetMoviesByContentType")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetByContentType(string contentType)
         {
@@ -107,6 +107,25 @@ namespace Api.Controllers
                 return NoContent();
             }
             else
+            {
+                return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
+            }
+        }
+
+        [HttpPut("{id}/views", Name = "UpdateMovieViews")]
+        public async Task<IActionResult> UpdateViews(int id, [FromBody] int views)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(ErrorUtilities.IdPositive(id));
+            }
+
+            try
+            {
+                await _service.UpdateViews(id, views);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
             }

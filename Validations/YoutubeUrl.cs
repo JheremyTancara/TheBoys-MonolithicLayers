@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Api.Utilities;
 
 namespace Api.Validation
+
 {
     public class YouTubeUrl : ValidationAttribute
     {
@@ -18,7 +19,7 @@ namespace Api.Validation
         {
             if (value is string url)
             {
-                var regex = new Regex(@"^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/|.+\?.+v=)|youtu\.be\/)[\w-]{11}$", RegexOptions.IgnoreCase);
+                var regex = new Regex(@"^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/|.+\?.+v=)|youtu\.be\/)[\w-]{11}(\?.*)?$", RegexOptions.IgnoreCase);
 
                 if (!regex.IsMatch(url))
                 {

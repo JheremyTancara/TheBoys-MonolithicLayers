@@ -19,7 +19,7 @@ namespace Api.Validation
         {
             if (value is string timeString)
             {
-                var regex = new Regex(@"^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$", RegexOptions.IgnoreCase);
+                var regex = new Regex(@"^(?:[01]\d|2[0-3]):[0-5]\d$", RegexOptions.IgnoreCase);
 
                 if (!regex.IsMatch(timeString))
                 {
