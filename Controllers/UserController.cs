@@ -37,7 +37,7 @@ namespace Api.Controllers
         }
 
         [HttpPost(Name = "AddUser")]
-        public async Task<IActionResult> Create([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> Create([FromBody] RegisterUserDTO userDTO)
         {
             var newUser = await userRepository.CreateAsync(userDTO);
             if (newUser.Username.Equals("error_409_validations"))
@@ -49,7 +49,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id}", Name = "EditUser")]
-        public async Task<IActionResult> Update(int id, [FromBody] UserDTO userDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] RegisterUserDTO userDTO)
         {
             if (id <= 0)
             {

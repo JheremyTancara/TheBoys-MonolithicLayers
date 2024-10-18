@@ -5,7 +5,7 @@ using Api.Validation;
 namespace Api.DTOs
 
 {
-    public class UserDTO
+    public class RegisterUserDTO
     {
         [JsonIgnore]
         public int UserID { get; set; }
@@ -26,7 +26,7 @@ namespace Api.DTOs
         [Required("Password")]
         [StringValue("Password")]
         [PasswordFormat("Password")]
-        [LengthRange("Username", 3, 10)]
+        [LengthRange("Username", 3, 20)]
         public string Password { get; set; } = string.Empty;
 
         [Required("DateOfBirth")]

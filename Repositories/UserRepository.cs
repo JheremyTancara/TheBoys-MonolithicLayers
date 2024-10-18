@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Api.Services
 
 {
-  public class UserRepository : RepositoryBase<User, UserDTO>
+  public class UserRepository : RepositoryBase<User, RegisterUserDTO>
   {
     private readonly DataContext _context;
     public DataTransformationService genericService;
@@ -28,7 +28,7 @@ namespace Api.Services
       return await _context.Users.FindAsync(id);
     }
 
-    public override async Task<User> CreateAsync(UserDTO newUserDTO)
+    public override async Task<User> CreateAsync(RegisterUserDTO newUserDTO)
     {
       if (await genericService.IsBrandNameUnique(_context, newUserDTO.Username))
       {
@@ -52,7 +52,7 @@ namespace Api.Services
       return newUser;
     }
 
-    public override async Task Update(int id, UserDTO userDTO)
+    public override async Task Update(int id, RegisterUserDTO userDTO)
     {
       var existingUser = await GetByIdAsync(id);
 

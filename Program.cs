@@ -1,11 +1,14 @@
+using System.Text;
 using Api.Data;
 using Api.DTOs;
 using Api.Models;
 using Api.Models.Interface;
 using Api.Repositories.Interface;
 using Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +40,20 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>  
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -57,7 +74,8 @@ var connectionString = builder.Configuration.GetConnectionString("MySQLConnectio
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25))));
 
-builder.Services.AddScoped<IRepository<User, UserDTO>, UserRepository>();
+builder.Services.AddScoped<UserRepository>(); 
+builder.Services.AddScoped<IRepository<User, RegisterUserDTO>, UserRepository>(); 
 builder.Services.AddScoped<IRepository<IMovie, MovieDTO>, MovieRepository>();
 builder.Services.AddScoped<IRepository<Actor, ActorDTO>, ActorRepository>();
 //builder.Services.AddScoped<IRepository<Actor, ActorDTO>, JsonActorRepository>(provider => 
@@ -79,6 +97,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseCors("AllowAllOrigins");
 
