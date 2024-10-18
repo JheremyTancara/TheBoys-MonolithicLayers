@@ -20,6 +20,8 @@ namespace Api.Data
         {
             await SeedEntity<Actor>("Data/actors.json", Actors);
             await SeedEntity<Director>("Data/directors.json", Directors);
+            await SeedEntity<User>("Data/users.json", Users);
+            await SeedEntity<Movie>("Data/movies.json", Movies);
         }
 
         private async Task SeedEntity<T>(string filePath, DbSet<T> dbSet) where T : class

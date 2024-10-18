@@ -26,23 +26,24 @@ namespace Api.Controllers
         }
 
         [HttpGet("home-page", Name = "GetMovies")]
-        [Authorize]
         public async Task<IActionResult> GetMovies()
+        {
+            var movies = await movieRepository.GetAllAsync(); 
+            return Ok(movies);
+        }
+
+
+        [HttpGet("partial-detail/{id}", Name = "GetMovie")]
+        [Authorize]
+        public async Task<ActionResult<MoviePartialDetail>> GetByIdPartialDetail(int id)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             var rToken = Jwt.validarToken(identity, _context);
             if (!rToken.success) return Unauthorized(rToken);
 
-            User usuario = rToken.result; 
+            User usuario = rToken.result;
 
-            var movies = await movieRepository.GetAllAsync(); 
-            return Ok(movies);
-        }
-
-        [HttpGet("partial-detail/{id}", Name = "GetMovie")]
-        public async Task<ActionResult<MoviePartialDetail>> GetByIdPartialDetail(int id)
-        {
             var movieDetail = await movieRepository.GetByIdAsync(id);
 
             if (movieDetail == null)
@@ -52,6 +53,7 @@ namespace Api.Controllers
             var partialDetail = (MoviePartialDetail)movieDetail;
             return Ok(partialDetail);
         }
+
 
         [HttpPost(Name = "AddMovie")]
         public async Task<IActionResult> Create([FromBody] MovieDTO movieDTO)
