@@ -60,6 +60,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<IRepository<User, UserDTO>, UserRepository>();
 builder.Services.AddScoped<IRepository<IMovie, MovieDTO>, MovieRepository>();
 builder.Services.AddScoped<IRepository<Actor, ActorDTO>, ActorRepository>();
+//builder.Services.AddScoped<IRepository<Actor, ActorDTO>, JsonActorRepository>(provider => 
+//    new JsonActorRepository("actors.json"));
 builder.Services.AddScoped<IRepository<Director, DirectorDTO>, DirectorRepository>();
 
 var app = builder.Build();
