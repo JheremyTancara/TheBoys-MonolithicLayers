@@ -23,37 +23,38 @@ namespace Api.Services
       {
           var movies = await _context.Movies.ToListAsync();
 
-          var homePageMovies = movies.Select(m => new MovieHomePageDTO
+          var homePageMovies = movies.Select(m => new MovieHomePage
           {
               MovieID = m.MovieID,
               Title = m.Title,
-              Genre = string.Join(", ", m.Genre.Select(g => g.ToString())), 
-              Duration = $"{(int)m.Duration / 60}:{m.Duration % 60:00}", 
+              Genre = string.Join(", ", m.Genre.Select(g => g.ToString())),
+              Duration = $"{(int)m.Duration / 60}:{m.Duration % 60:00}",
               Rating = m.Rating,
               ImageUrl = m.ImageUrl,
               Type = m.Type.ToString(),
               Views = m.Views,
-              AgeRestriction = m.AgeRestriction 
-          });
+              AgeRestriction = m.AgeRestriction
+          }).ToList();
 
           return homePageMovies;
       }
 
       public override async Task<IMovie?> GetByIdAsync(int id)
       {
-          var movie = await _context.Movies.FindAsync(id) ?? throw new KeyNotFoundException($"Movie with ID {id} not found.");
+          var movie = await _context.Movies.FindAsync(id) 
+                      ?? throw new KeyNotFoundException($"Movie with ID {id} not found.");
 
-          var partialDetailDTO = new MoviePartialDetailDTO
+          var partialDetail = new MoviePartialDetail
           {
               MovieID = movie.MovieID,
-              ReleaseDate = movie.ReleaseDate.ToString("dd/MM/yyyy"), 
+              ReleaseDate = movie.ReleaseDate.ToString("dd/MM/yyyy"),
               Description = movie.Description,
               TrailerUrl = movie.TrailerUrl,
               CastName = movie.Cast,
               DirectorName = movie.Director
           };
 
-          return partialDetailDTO;
+          return partialDetail;
       }
 
       public override async Task<IMovie> CreateAsync(MovieDTO newMovieDTO)

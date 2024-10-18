@@ -21,13 +21,13 @@ namespace Api.Controllers
         }
 
         [HttpGet("home-page", Name = "GetMovies")]
-        public async Task<IEnumerable<MovieHomePageDTO>> Get()
+        public async Task<IEnumerable<MovieHomePage>> Get()
         {
-            return (IEnumerable<MovieHomePageDTO>)await movieRepository.GetAllAsync();
+            return (IEnumerable<MovieHomePage>)await movieRepository.GetAllAsync();
         }
 
         [HttpGet("partial-detail/{id}", Name = "GetMovie")]
-        public async Task<ActionResult<MoviePartialDetailDTO>> GetByIdPartialDetail(int id)
+        public async Task<ActionResult<MoviePartialDetail>> GetByIdPartialDetail(int id)
         {
             var movieDetail = await movieRepository.GetByIdAsync(id);
 
@@ -35,7 +35,7 @@ namespace Api.Controllers
             {
                 return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
             }
-            var partialDetail = (MoviePartialDetailDTO)movieDetail;
+            var partialDetail = (MoviePartialDetail)movieDetail;
             return Ok(partialDetail);
         }
 
