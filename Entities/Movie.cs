@@ -9,10 +9,11 @@ public class Movie
     public double Duration { get; set; } 
     public double Rating { get; set; }
     public string Description { get; set; } = string.Empty;
-    public List<Actor>? Cast { get; set; }
-    public Director? Director { get; set; } 
+    public string[]? Cast { get; set; }
+    public string Director { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public string TrailerUrl { get; set; } = string.Empty;
     public ContentType Type { get; set; }
     public int Views { get; set; }
+    public int AgeRestriction { get; set; }
 }

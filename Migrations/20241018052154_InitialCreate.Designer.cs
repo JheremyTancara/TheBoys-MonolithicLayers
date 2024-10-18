@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241014005731_InitialCreate")]
+    [Migration("20241018052154_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -40,9 +40,6 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("MovieID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Movies")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -56,8 +53,6 @@ namespace backend.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("ActorID");
-
-                    b.HasIndex("MovieID");
 
                     b.ToTable("Actors");
                 });
@@ -101,12 +96,19 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MovieID"));
 
+                    b.Property<int>("AgeRestriction")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cast")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("DirectorID")
-                        .HasColumnType("int");
+                    b.Property<string>("Director")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<double>("Duration")
                         .HasColumnType("double");
@@ -139,8 +141,6 @@ namespace backend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("MovieID");
-
-                    b.HasIndex("DirectorID");
 
                     b.ToTable("Movies");
                 });
@@ -224,22 +224,6 @@ namespace backend.Migrations
                     b.ToTable("UserWatchedMovies", (string)null);
                 });
 
-            modelBuilder.Entity("Api.Models.Actor", b =>
-                {
-                    b.HasOne("Api.Models.Movie", null)
-                        .WithMany("Cast")
-                        .HasForeignKey("MovieID");
-                });
-
-            modelBuilder.Entity("Api.Models.Movie", b =>
-                {
-                    b.HasOne("Api.Models.Director", "Director")
-                        .WithMany()
-                        .HasForeignKey("DirectorID");
-
-                    b.Navigation("Director");
-                });
-
             modelBuilder.Entity("MovieUser", b =>
                 {
                     b.HasOne("Api.Models.User", null)
@@ -283,11 +267,6 @@ namespace backend.Migrations
                         .HasForeignKey("WatchedMoviesMovieID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Api.Models.Movie", b =>
-                {
-                    b.Navigation("Cast");
                 });
 #pragma warning restore 612, 618
         }

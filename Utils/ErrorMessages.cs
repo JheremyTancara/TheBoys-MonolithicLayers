@@ -94,5 +94,11 @@ namespace Api.Utilities
     {
         return $"The field '{value}' must be between {min} and {max}.";
     }
+
+    public static string ValidateCommaSeparatedNumbers(string value) => 
+    $"{value} has an invalid format. It must be a list of integers separated by commas (e.g., 2, 3, 3) without trailing commas.";
+
+    public static string ValidateNumericString(string value) =>
+    $"{value} must contain only numbers (e.g., 100, 20321).";
   }
 }

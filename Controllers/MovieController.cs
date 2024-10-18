@@ -1,8 +1,7 @@
 using Api.Services;
-using Api.Models;
 using Api.Utilities;
-using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Api.DTOs;
 
 namespace Api.Controllers
 {
@@ -17,66 +16,23 @@ namespace Api.Controllers
             _service = service;
         }
 
-        [HttpGet(Name = "GetMovies")]
-        public async Task<IEnumerable<Movie>> Get()
+        [HttpGet("home-page", Name = "GetMovies")]
+        public async Task<IEnumerable<MovieHomePageDTO>> Get()
         {
-            return await _service.GetAll();
+            return await _service.GetAllHomePage();
         }
 
-        [HttpGet("{id}", Name = "GetMovie")]
-        public async Task<ActionResult<User>> GetById(int id)
+        [HttpGet("partial-detail/{id}", Name = "GetMovie")]
+        public async Task<ActionResult<MoviePartialDetailDTO>> GetByIdPartialDetail(int id)
         {
-            var movie = await _service.GetByID(id);
+            var movieDetail = await _service.GetByIDPartialDetail(id);
 
-            if (movie == null)
+            if (movieDetail == null)
             {
                 return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
             }
-            return Ok(movie);
-        }
 
-        [HttpGet("by-title/{title}", Name = "GetMovieByTitle")]
-        public async Task<ActionResult<Movie>> GetByTitle(string title)
-        {
-            var movie = await _service.GetByTitle(title);
-
-            if (movie == null)
-            {
-                return NotFound(ErrorUtilities.valueNotFound("Movie", title));
-            }
-
-            return Ok(movie);
-        }
-
-        [HttpGet("by-genres/{genres}", Name = "GetMoviesByGenres")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetByGenres(string genres)
-        {
-            var movies = await _service.GetByGenres(genres);
-
-            if (movies == null || !movies.Any())
-            {
-                return NotFound(ErrorUtilities.valueNotFound("Movies", genres));
-            }
-            
-            return Ok(movies);
-        }
-
-        [HttpGet("by-content-type/{contentType}", Name = "GetMoviesByContentType")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetByContentType(string contentType)
-        {
-            if (string.IsNullOrWhiteSpace(contentType))
-            {
-                return BadRequest("El tipo de contenido no puede estar vacío.");
-            }
-
-            var movies = await _service.GetByContentType(contentType);
-
-            if (movies == null || !movies.Any())
-            {
-                return NotFound(ErrorUtilities.valueNotFound("Movies", contentType));
-            }
-
-            return Ok(movies);
+            return Ok(movieDetail);
         }
 
         [HttpPost(Name = "AddMovie")]
@@ -88,11 +44,11 @@ namespace Api.Controllers
                 return Conflict(ErrorUtilities.UniqueName("Movie"));
             }
 
-            return CreatedAtAction(nameof(GetById), new { id = newMovie.MovieID }, movieDTO);
+            return CreatedAtAction(nameof(GetByIdPartialDetail), new { id = newMovie.MovieID }, movieDTO);
         }
 
         [HttpPut("{id}", Name = "EditMovie")]
-        public async Task<IActionResult> Update(int id, [FromBody] MovieDTO movieDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] MovieDTO MovieDTO)
         {
             if (id <= 0)
             {
@@ -103,29 +59,10 @@ namespace Api.Controllers
 
             if (userToUpdate != null)
             {
-                await _service.Update(id, movieDTO);
+                await _service.Update(id, MovieDTO);
                 return NoContent();
             }
             else
-            {
-                return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
-            }
-        }
-
-        [HttpPut("{id}/views", Name = "UpdateMovieViews")]
-        public async Task<IActionResult> UpdateViews(int id, [FromBody] int views)
-        {
-            if (id <= 0)
-            {
-                return BadRequest(ErrorUtilities.IdPositive(id));
-            }
-
-            try
-            {
-                await _service.UpdateViews(id, views);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
             {
                 return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
             }
