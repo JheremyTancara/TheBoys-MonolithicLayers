@@ -1,0 +1,26 @@
+[
+  {
+      "DirectorID": 1,
+      "Name": "Christopher Nolan",
+      "Age": 53,
+      "Bio": "Director conocido por sus películas de ciencia ficción.",
+      "ProfilePictureUrl": "https://example.com/nolan.jpg",
+      "NumberOfAwards": 20
+  },
+  {
+      "DirectorID": 2,
+      "Name": "Steven Spielberg",
+      "Age": 77,
+      "Bio": "Director icónico conocido por obras maestras como Jaws y E.T.",
+      "ProfilePictureUrl": "https://example.com/spielberg.jpg",
+      "NumberOfAwards": 50
+  },
+  {
+      "DirectorID": 3,
+      "Name": "Quentin Tarantino",
+      "Age": 61,
+      "Bio": "Director famoso por su estilo único y narración no lineal.",
+      "ProfilePictureUrl": "https://example.com/tarantino.jpg",
+      "NumberOfAwards": 2
+  }
+]

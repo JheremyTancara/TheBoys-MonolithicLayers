@@ -1,0 +1,23 @@
+[
+  {
+      "ActorID": 1,
+      "Name": "Robert Downey Jr.",
+      "Age": 56,
+      "Bio": "Actor conocido por su papel de Iron Man.",
+      "ProfilePictureUrl": "https://example.com/robert.jpg"
+  },
+  {
+      "ActorID": 2,
+      "Name": "Scarlett Johansson",
+      "Age": 36,
+      "Bio": "Actriz conocida por su papel de Black Widow.",
+      "ProfilePictureUrl": "https://example.com/scarlett.jpg"
+  },
+  {
+      "ActorID": 3,
+      "Name": "Chris Hemsworth",
+      "Age": 40,
+      "Bio": "Actor conocido por su papel de Thor.",
+      "ProfilePictureUrl": "https://example.com/chris.jpg"
+  }
+]

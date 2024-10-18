@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,27 @@ namespace Api.Data
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {
+        }
+
+        public async Task SeedData()
+        {
+            await SeedEntity<Actor>("Data/actors.json", Actors);
+            await SeedEntity<Director>("Data/directors.json", Directors);
+        }
+
+        private async Task SeedEntity<T>(string filePath, DbSet<T> dbSet) where T : class
+        {
+            if (!dbSet.Any())
+            {
+                var jsonData = await File.ReadAllTextAsync(filePath);
+                var entities = JsonSerializer.Deserialize<List<T>>(jsonData);
+
+                if (entities != null && entities.Any())
+                {
+                    await dbSet.AddRangeAsync(entities);
+                    await SaveChangesAsync();
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

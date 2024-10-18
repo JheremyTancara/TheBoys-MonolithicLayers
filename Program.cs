@@ -64,6 +64,12 @@ builder.Services.AddScoped<IRepository<Director, DirectorDTO>, DirectorRepositor
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+    await context.SeedData(); 
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
