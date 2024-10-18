@@ -1,6 +1,8 @@
+using Api.Models.Interface;
+
 namespace Api.Models;
 
-public class Movie
+public class Movie : IMovie
 {
     public int MovieID { get; set; } 
     public string Title { get; set; } = string.Empty;    

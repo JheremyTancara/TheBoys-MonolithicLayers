@@ -1,32 +1,33 @@
-using Api.Services;
 using Api.Models;
 using Api.Utilities;
 using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Api.Services;
 
 namespace Api.Controllers
+
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserService _service;
+        private readonly UserRepository userRepository;
 
-        public UserController(UserService service)
+        public UserController(UserRepository _userRepository)
         {
-            _service = service;
+            userRepository = _userRepository;
         }
 
         [HttpGet(Name = "GetUsers")]
         public async Task<IEnumerable<User>> Get()
         {
-            return await _service.GetAll();
+            return await userRepository.GetAllAsync();
         }
 
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<ActionResult<User>> GetById(int id)
         {
-            var user = await _service.GetByID(id);
+            var user = await userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -38,7 +39,7 @@ namespace Api.Controllers
         [HttpPost(Name = "AddUser")]
         public async Task<IActionResult> Create([FromBody] UserDTO userDTO)
         {
-            var newUser = await _service.Create(userDTO);
+            var newUser = await userRepository.CreateAsync(userDTO);
             if (newUser.Username.Equals("error_409_validations"))
             {
                 return Conflict(ErrorUtilities.UniqueName("User"));
@@ -55,11 +56,11 @@ namespace Api.Controllers
                 return BadRequest(ErrorUtilities.IdPositive(id));
             }
 
-            var userToUpdate = await _service.GetByID(id);
+            var userToUpdate = await userRepository.GetByIdAsync(id);
 
             if (userToUpdate != null)
             {
-                await _service.Update(id, userDTO);
+                await userRepository.Update(id, userDTO);
                 return NoContent();
             }
             else

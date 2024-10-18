@@ -1,22 +1,25 @@
 using Api.Data;
 using Api.DTOs;
 using Api.Models;
+using Api.Models.Interface;
+using Api.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace Api.Services
 
 {
-    public class MovieService
+    public class MovieRepository : RepositoryBase<IMovie, MovieDTO>
     {
       private readonly DataContext _context;
+      public DataTransformationService genericService;
 
-      public MovieService(DataContext context)
+      public MovieRepository(DataContext context)
       {
           _context = context;
+          genericService = new DataTransformationService();
       }
 
-      public async Task<IEnumerable<MovieHomePageDTO>> GetAllHomePage()
+      public override async Task<IEnumerable<IMovie>> GetAllAsync()
       {
           var movies = await _context.Movies.ToListAsync();
 
@@ -36,7 +39,7 @@ namespace Api.Services
           return homePageMovies;
       }
 
-      public async Task<MoviePartialDetailDTO?> GetByIDPartialDetail(int id)
+      public override async Task<IMovie?> GetByIdAsync(int id)
       {
           var movie = await _context.Movies.FindAsync(id) ?? throw new KeyNotFoundException($"Movie with ID {id} not found.");
 
@@ -53,29 +56,24 @@ namespace Api.Services
           return partialDetailDTO;
       }
 
-      public async Task<Movie?> GetByID(int id)
-      {
-        return await _context.Movies.FindAsync(id);
-      }
-
-      public async Task<Movie> Create(MovieDTO newMovieDTO)
+      public override async Task<IMovie> CreateAsync(MovieDTO newMovieDTO)
       {
           await ValidateIds(newMovieDTO);
 
           var newMovie = new Movie
           {
-              MovieID = await GetCount() + 1,
+              MovieID = await _context.Movies.CountAsync() + 1,
               Title = newMovieDTO.Title,
-              Genre = ParseGenre(newMovieDTO.Genre),
-              ReleaseDate = ConvertToDateTime(newMovieDTO.ReleaseDate),
-              Duration = ConvertToMinutes(newMovieDTO.Duration),
+              Genre = DataTransformationService.ParseGenre(newMovieDTO.Genre),
+              ReleaseDate = DataTransformationService.ConvertToDateTime(newMovieDTO.ReleaseDate),
+              Duration = DataTransformationService.ConvertToMinutes(newMovieDTO.Duration),
               Rating = newMovieDTO.Rating,
               Description = newMovieDTO.Description,
               Cast = ParseCastNames(ParseListActor(newMovieDTO.CastIDs)),
               Director = ParseDirector(newMovieDTO.DirectorID).Name,
               ImageUrl = newMovieDTO.ImageUrl,
               TrailerUrl = newMovieDTO.TrailerUrl,
-              Type = ConvertToContentType(newMovieDTO.Type),
+              Type = DataTransformationService.ConvertToContentType(newMovieDTO.Type),
               Views = newMovieDTO.Views,
               AgeRestriction = newMovieDTO.AgeRestriction,
           };
@@ -86,7 +84,7 @@ namespace Api.Services
           return newMovie;
       }
 
-      public async Task Update(int id, MovieDTO movieDTO)
+      public override async Task Update(int id, MovieDTO movieDTO)
       {
         var existingMovie = await GetByID(id);
 
@@ -96,9 +94,9 @@ namespace Api.Services
         await ValidateIds(movieDTO);
 
         existingMovie.Title = movieDTO.Title;
-        existingMovie.Genre = ParseGenre(movieDTO.Genre);
-        existingMovie.ReleaseDate = ConvertToDateTime(movieDTO.ReleaseDate);
-        existingMovie.Duration = ConvertToMinutes(movieDTO.Duration);
+        existingMovie.Genre = DataTransformationService.ParseGenre(movieDTO.Genre);
+        existingMovie.ReleaseDate = DataTransformationService.ConvertToDateTime(movieDTO.ReleaseDate);
+        existingMovie.Duration = DataTransformationService.ConvertToMinutes(movieDTO.Duration);
         existingMovie.Rating = movieDTO.Rating;
         existingMovie.Title = movieDTO.Title;
         existingMovie.Description = movieDTO.Description;
@@ -106,7 +104,7 @@ namespace Api.Services
         existingMovie.Director = ParseDirector(movieDTO.DirectorID).Name;
         existingMovie.ImageUrl = movieDTO.ImageUrl;
         existingMovie.TrailerUrl = movieDTO.TrailerUrl;
-        existingMovie.Type = ConvertToContentType(movieDTO.Type);
+        existingMovie.Type = DataTransformationService.ConvertToContentType(movieDTO.Type);
         existingMovie.Views = movieDTO.Views;
         existingMovie.AgeRestriction = movieDTO.AgeRestriction;
 
@@ -114,134 +112,11 @@ namespace Api.Services
         }
       }
 
-      public async Task UpdateViews(int id, int views)
+      public async Task<Movie?> GetByID(int id)
       {
-          var existingMovie = await GetByID(id);
-
-          if (existingMovie is not null)
-          {
-              existingMovie.Views = views;
-              await _context.SaveChangesAsync();
-          }
-          else
-          {
-              throw new KeyNotFoundException($"Movie with ID {id} not found.");
-          }
+        return await _context.Movies.FindAsync(id);
       }
 
-      public async Task<int> GetCount()
-      {
-        return await _context.Movies.CountAsync();
-      }
-
-      public async Task<bool> IsBrandNameUnique(string movieTitle)
-      {
-      var movies = await _context.Movies.AsNoTracking().ToListAsync();
-      return movies.Any(b => string.Equals(b.Title, movieTitle, StringComparison.OrdinalIgnoreCase));
-      }
-
-      public async Task<Movie?> GetByTitle(string title) 
-      {
-          return await _context.Movies
-              .FirstOrDefaultAsync(m => m.Title.ToLower() == title.ToLower());
-      }
-
-      public async Task<IEnumerable<Movie>> GetByGenres(string genreString)
-      {
-          List<Genre> genres;
-          try
-          {
-              genres = ParseGenre(genreString); 
-          }
-          catch (ArgumentException ex)
-          {
-              return Enumerable.Empty<Movie>();
-          }
-
-          var movies = await _context.Movies
-              .AsNoTracking()
-              .ToListAsync(); 
-
-          return movies
-              .Where(m => m.Genre.Any(g => genres.Contains(g)))
-              .ToList();
-      }
-
-      public async Task<IEnumerable<Movie>> GetByContentType(string contentType)
-      {
-          if (Enum.TryParse<ContentType>(contentType, true, out var parsedContentType))
-          {
-              return await _context.Movies
-                  .AsNoTracking()
-                  .Where(m => m.Type == parsedContentType)
-                  .ToListAsync();
-          }
-          
-          return Enumerable.Empty<Movie>();
-      }
-
-      public static DateTime ConvertToDateTime(string dateString)
-      {
-          if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-          {
-              return date; 
-          }
-          
-          throw new FormatException("The date is not in a valid format.");
-      }
-
-      public static List<Genre> ParseGenre(string genreString)
-      {
-          if (string.IsNullOrWhiteSpace(genreString))
-              throw new ArgumentException("Input string cannot be null or empty.");
-
-          var genreStrings = genreString.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(s => s.Trim())
-                                        .ToList();
-
-          var genreList = new List<Genre>();
-
-          foreach (var genre in genreStrings)
-          {
-              if (Enum.TryParse<Genre>(genre, true, out var parsedGenre))
-              {
-                  genreList.Add(parsedGenre);
-              }
-              else
-              {
-                  throw new ArgumentException($"'{genre}' is not a valid Genre.");
-              }
-          }
-
-          return genreList;
-      }
-
-
-      public static ContentType ConvertToContentType(string contentTypeString)
-      {
-          if (Enum.TryParse<ContentType>(contentTypeString, true, out var contentType))
-          {
-              return contentType;
-          }
-
-          throw new ArgumentException($"'{contentTypeString}' is not a valid Rating.");
-      }
-
-      public static double ConvertToMinutes(string time)
-      {
-          string[] parts = time.Split(':');
-
-          if (parts.Length != 2)
-          {
-              throw new FormatException("The format must be HH:MM");
-          }
-
-          int hours = int.Parse(parts[0]);
-          int minutes = int.Parse(parts[1]);
-
-          double totalMinutes = hours * 60 + minutes;
-          return Math.Round(totalMinutes, 2);
-      }
 
       private List<Actor> ParseListActor(string castIdsString)
       {
@@ -269,7 +144,7 @@ namespace Api.Services
           if (existingDirector == null) throw new ArgumentException("The specified Director ID does not exist.");
 
           return existingDirector;
-      }
+      } 
 
       private async Task ValidateIds(MovieDTO newMovieDTO)
       {

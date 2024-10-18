@@ -1,4 +1,8 @@
 using Api.Data;
+using Api.DTOs;
+using Api.Models;
+using Api.Models.Interface;
+using Api.Repositories.Interface;
 using Api.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
@@ -53,10 +57,10 @@ var connectionString = builder.Configuration.GetConnectionString("MySQLConnectio
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25))));
 
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<MovieService>();
-builder.Services.AddScoped<DirectorService>();
-builder.Services.AddScoped<ActorService>();
+builder.Services.AddScoped<IRepository<User, UserDTO>, UserRepository>();
+builder.Services.AddScoped<IRepository<IMovie, MovieDTO>, MovieRepository>();
+builder.Services.AddScoped<IRepository<Actor, ActorDTO>, ActorRepository>();
+builder.Services.AddScoped<IRepository<Director, DirectorDTO>, DirectorRepository>();
 
 var app = builder.Build();
 

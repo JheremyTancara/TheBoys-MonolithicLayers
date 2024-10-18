@@ -2,46 +2,52 @@ using Api.Services;
 using Api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Api.DTOs;
+using Api.Repositories.Interface;
+using Api.Models.Interface;
+using Api.Models;
 
 namespace Api.Controllers
+
 {
     [Route("api/[controller]")]
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private readonly MovieService _service;
+        private readonly IRepository<IMovie, MovieDTO> movieRepository;
 
-        public MovieController(MovieService service)
+        public MovieController(IRepository<IMovie, MovieDTO> _movieRepository)
         {
-            _service = service;
+            movieRepository = _movieRepository;
         }
 
         [HttpGet("home-page", Name = "GetMovies")]
         public async Task<IEnumerable<MovieHomePageDTO>> Get()
         {
-            return await _service.GetAllHomePage();
+            return (IEnumerable<MovieHomePageDTO>)await movieRepository.GetAllAsync();
         }
 
         [HttpGet("partial-detail/{id}", Name = "GetMovie")]
         public async Task<ActionResult<MoviePartialDetailDTO>> GetByIdPartialDetail(int id)
         {
-            var movieDetail = await _service.GetByIDPartialDetail(id);
+            var movieDetail = await movieRepository.GetByIdAsync(id);
 
             if (movieDetail == null)
             {
                 return NotFound(ErrorUtilities.FieldNotFound("Movie", id));
             }
-
-            return Ok(movieDetail);
+            var partialDetail = (MoviePartialDetailDTO)movieDetail;
+            return Ok(partialDetail);
         }
 
         [HttpPost(Name = "AddMovie")]
         public async Task<IActionResult> Create([FromBody] MovieDTO movieDTO)
         {
-            var newMovie = await _service.Create(movieDTO);
-            if (newMovie.Title.Equals("error_409_validations"))
+            var newMovie = await movieRepository.CreateAsync(movieDTO);
+            var movie = newMovie as Movie;
+            
+            if (movie == null)
             {
-                return Conflict(ErrorUtilities.UniqueName("Movie"));
+                return BadRequest("Error creating the movie."); 
             }
 
             return CreatedAtAction(nameof(GetByIdPartialDetail), new { id = newMovie.MovieID }, movieDTO);
@@ -55,11 +61,11 @@ namespace Api.Controllers
                 return BadRequest(ErrorUtilities.IdPositive(id));
             }
 
-            var userToUpdate = await _service.GetByID(id);
+            var userToUpdate = await movieRepository.GetByIdAsync(id);
 
             if (userToUpdate != null)
             {
-                await _service.Update(id, MovieDTO);
+                await movieRepository.Update(id, MovieDTO);
                 return NoContent();
             }
             else

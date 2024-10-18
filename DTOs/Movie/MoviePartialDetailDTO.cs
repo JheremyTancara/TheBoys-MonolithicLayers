@@ -1,10 +1,11 @@
 using System.Text.Json.Serialization;
+using Api.Models.Interface;
 using Api.Validation;
 
 namespace Api.DTOs
 
 {
-    public class MoviePartialDetailDTO
+    public class MoviePartialDetailDTO : IMovie
     {
         [JsonIgnore]
         public int MovieID { get; set; }

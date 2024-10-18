@@ -1,32 +1,33 @@
-using Api.Services;
 using Api.Models;
 using Api.Utilities;
 using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Api.Repositories.Interface;
 
 namespace Api.Controllers
+
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ActorController : ControllerBase
     {
-        private readonly ActorService _service;
+        private readonly IRepository<Actor, ActorDTO> actorRepository;
 
-        public ActorController(ActorService service)
+        public ActorController(IRepository<Actor, ActorDTO> _actorRepository)
         {
-            _service = service;
+            actorRepository = _actorRepository;
         }
 
         [HttpGet(Name = "GetActors")]
         public async Task<IEnumerable<Actor>> Get()
         {
-            return await _service.GetAll();
+            return await actorRepository.GetAllAsync();
         }
 
         [HttpGet("{id}", Name = "GetActor")]
         public async Task<ActionResult<Actor>> GetById(int id)
         {
-            var actor = await _service.GetByID(id);
+            var actor = await actorRepository.GetByIdAsync(id);
 
             if (actor == null)
             {
@@ -38,7 +39,7 @@ namespace Api.Controllers
         [HttpPost(Name = "AddActor")]
         public async Task<IActionResult> Create([FromBody] ActorDTO actorDTO)
         {
-            var newActor = await _service.Create(actorDTO);
+            var newActor = await actorRepository.CreateAsync(actorDTO);
             if (newActor.Name.Equals("error_409_validations"))
             {
                 return Conflict(ErrorUtilities.UniqueName("Actor"));
@@ -55,11 +56,11 @@ namespace Api.Controllers
                 return BadRequest(ErrorUtilities.IdPositive(id));
             }
 
-            var actorToUpdate = await _service.GetByID(id);
+            var actorToUpdate = await actorRepository.GetByIdAsync(id);
 
             if (actorToUpdate != null)
             {
-                await _service.Update(id, actorDTO);
+                await actorRepository.Update(id, actorDTO);
                 return NoContent();
             }
             else

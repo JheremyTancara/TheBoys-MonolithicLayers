@@ -1,32 +1,33 @@
-using Api.Services;
 using Api.Models;
 using Api.Utilities;
 using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Api.Repositories.Interface;
 
 namespace Api.Controllers
+
 {
     [Route("api/[controller]")]
     [ApiController]
     public class DirectorController : ControllerBase
     {
-        private readonly DirectorService _service;
+        private readonly IRepository<Director, DirectorDTO> directorRepository;
 
-        public DirectorController(DirectorService service)
+        public DirectorController(IRepository<Director, DirectorDTO> _directorRepository)
         {
-            _service = service;
+            directorRepository = _directorRepository;
         }
 
         [HttpGet(Name = "GetDirectors")]
         public async Task<IEnumerable<Director>> Get()
         {
-            return await _service.GetAll();
+            return await directorRepository.GetAllAsync();
         }
 
         [HttpGet("{id}", Name = "GetDirector")]
         public async Task<ActionResult<Director>> GetById(int id)
         {
-            var director = await _service.GetByID(id);
+            var director = await directorRepository.GetByIdAsync(id);
 
             if (director == null)
             {
@@ -38,7 +39,7 @@ namespace Api.Controllers
         [HttpPost(Name = "AddDirector")]
         public async Task<IActionResult> Create([FromBody] DirectorDTO directorDTO)
         {
-            var newDirector = await _service.Create(directorDTO);
+            var newDirector = await directorRepository.CreateAsync(directorDTO);
             if (newDirector.Name.Equals("error_409_validations"))
             {
                 return Conflict(ErrorUtilities.UniqueName("Director"));
@@ -55,11 +56,11 @@ namespace Api.Controllers
                 return BadRequest(ErrorUtilities.IdPositive(id));
             }
 
-            var userToUpdate = await _service.GetByID(id);
+            var userToUpdate = await directorRepository.GetByIdAsync(id);
 
             if (userToUpdate != null)
             {
-                await _service.Update(id, directorDTO);
+                await directorRepository.Update(id, directorDTO);
                 return NoContent();
             }
             else
