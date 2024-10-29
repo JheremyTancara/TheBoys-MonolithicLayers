@@ -8,38 +8,54 @@ namespace Api.Services
 
         public RecommendationService(List<Movie> allMovies)
         {
-            _allMovies = allMovies; 
+            _allMovies = allMovies;
         }
 
-        public List<Movie> GetRecommendedMovies(UserMovie user, ContentType preferredContentType)
+        public List<Movie> GetTopMoviesByGenre(Genre genre)
         {
-            var userPreferredGenres = user.WatchedMovies
-                .SelectMany(m => m.Genre ?? new List<Genre>())
-                .Concat(user.Watchlist.SelectMany(m => m.Genre ?? new List<Genre>()))
-                .Distinct()
+            var moviesByGenre = _allMovies
+                .Where(m => m.Genre != null && m.Genre.Contains(genre))
+                .OrderByDescending(m => m.Views)
+                .Take(10)
                 .ToList();
 
-            if (!userPreferredGenres.Any())
-                return new List<Movie>();
+            if (!moviesByGenre.Any())
+            {
+                return GetMostViewedMovies().Take(10).ToList();
+            }
 
-            var recommendedMovies = _allMovies
-                .Where(m => 
-                    m.Type == preferredContentType 
-                )
-                .OrderByDescending(m => m.Views) 
-                .ThenByDescending(m => m.Rating)
-                .ToList();
-
-            return recommendedMovies; 
+            return moviesByGenre;
         }
 
         public List<Movie> GetMostViewedMovies()
         {
-            var mostViewedMovies = _allMovies
-                .OrderByDescending(m => m.Views) 
+            return _allMovies
+                .OrderByDescending(m => m.Views)
+                .Take(10)
                 .ToList();
+        }
 
-            return mostViewedMovies; 
+        public List<Movie> GetTopRatedMovies()
+        {
+            return _allMovies
+                .OrderByDescending(m => m.Rating)
+                .Take(10)
+                .ToList();
+        }
+
+        public List<Movie> GetRecommendedMovies(UserMovie user, ContentType type)
+        {
+            if (user.WatchedMovies != null && user.WatchedMovies.Any())
+            {
+                var firstWatchedMovie = user.WatchedMovies.First();
+                if (firstWatchedMovie.Genre != null && firstWatchedMovie.Genre.Any())
+                {
+                    var genre = firstWatchedMovie.Genre.First();
+                    return GetTopMoviesByGenre(genre);
+                }
+            }
+
+            return GetMostViewedMovies();
         }
     }
 }
