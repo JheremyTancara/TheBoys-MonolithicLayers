@@ -32,7 +32,6 @@ namespace Api.DTOs
 
         [Required("ImageUrl")]
         [StringValue("ImageUrl")]
-        [ImageUrl("ImageUrl")]
         [LengthRange("ImageUrl", 3, 2083)]
         public string ImageUrl { get; set; } = string.Empty;
 
