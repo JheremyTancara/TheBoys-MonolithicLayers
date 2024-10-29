@@ -1,4 +1,3 @@
-using Api.Services;
 using Api.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Api.DTOs;
@@ -39,10 +38,15 @@ namespace Api.Controllers
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
+            if (identity == null)
+            {
+                throw new ArgumentNullException(nameof(identity), "The identity value cannot be null.");
+            }
+
             var rToken = Jwt.validarToken(identity, _context);
             if (!rToken.success) return Unauthorized(rToken);
 
-            User usuario = rToken.result;
+            var usuario = rToken.result;
 
             var movieDetail = await movieRepository.GetByIdAsync(id);
 

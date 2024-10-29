@@ -58,7 +58,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "defaultSecretKey"))
     };
 });
 
@@ -82,8 +82,8 @@ var connectionString = builder.Configuration.GetConnectionString("MySQLConnectio
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25))));
 
-builder.Services.AddScoped<UserRepository>(); 
-builder.Services.AddScoped<IRepository<User, RegisterUserDTO>, UserRepository>(); 
+//builder.Services.AddScoped<UserRepository>(); 
+//builder.Services.AddScoped<IRepository<User, RegisterUserDTO>, UserRepository>(); 
 builder.Services.AddScoped<IRepository<IMovie, MovieDTO>, MovieRepository>();
 builder.Services.AddScoped<IRepository<Actor, ActorDTO>, ActorRepository>();
 //builder.Services.AddScoped<IRepository<Actor, ActorDTO>, JsonActorRepository>(provider => 
@@ -126,7 +126,7 @@ public class LowercaseControllerModelConvention : IControllerModelConvention
         {
             var attributeRouteModel = selectorModel.AttributeRouteModel;
 
-            if (attributeRouteModel != null)
+            if (attributeRouteModel?.Template != null)
             {
                 attributeRouteModel.Template = attributeRouteModel.Template.ToLower();
             }

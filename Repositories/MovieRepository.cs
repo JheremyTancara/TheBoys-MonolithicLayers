@@ -27,7 +27,7 @@ namespace Api.Services
           {
               MovieID = m.MovieID,
               Title = m.Title,
-              Genre = string.Join(", ", m.Genre.Select(g => g.ToString())),
+              Genre = string.Join(", ", m.Genre?.Select(g => g.ToString()) ?? Enumerable.Empty<string>()),
               Duration = $"{(int)m.Duration / 60}:{m.Duration % 60:00}",
               Rating = m.Rating,
               ImageUrl = m.ImageUrl,

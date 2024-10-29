@@ -11,7 +11,7 @@ namespace Api.Services
             _allMovies = allMovies; 
         }
 
-        public List<Movie> GetRecommendedMovies(User user, ContentType preferredContentType)
+        public List<Movie> GetRecommendedMovies(UserMovie user, ContentType preferredContentType)
         {
             var userPreferredGenres = user.WatchedMovies
                 .SelectMany(m => m.Genre ?? new List<Genre>())

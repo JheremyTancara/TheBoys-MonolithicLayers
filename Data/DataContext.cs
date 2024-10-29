@@ -6,7 +6,7 @@ namespace Api.Data
 {
     public class DataContext : DbContext
     {
-        public DbSet<User> Users => Set<User>();
+        public DbSet<UserMovie> Users => Set<UserMovie>();
         public DbSet<Movie> Movies => Set<Movie>();
         public DbSet<Actor> Actors => Set<Actor>();
         public DbSet<Director> Directors => Set<Director>();
@@ -18,9 +18,8 @@ namespace Api.Data
 
         public async Task SeedData()
         {
-            await SeedEntity<Actor>("Data/actors.json", Actors);
-            await SeedEntity<Director>("Data/directors.json", Directors);
-            await SeedEntity<User>("Data/users.json", Users);
+            await SeedEntity<Actor>("Data/Files/actors.json", Actors);
+            await SeedEntity<Director>("Data/Files/directors.json", Directors);
         }
 
         private async Task SeedEntity<T>(string filePath, DbSet<T> dbSet) where T : class
@@ -36,24 +35,6 @@ namespace Api.Data
                     await SaveChangesAsync();
                 }
             }
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Watchlist)
-                .WithMany()
-                .UsingEntity(j => j.ToTable("UserWatchlist")); 
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.RecommendedMovies)
-                .WithMany()
-                .UsingEntity(j => j.ToTable("UserRecommendedMovies"));
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.WatchedMovies)
-                .WithMany()
-                .UsingEntity(j => j.ToTable("UserWatchedMovies")); 
         }
     }
 }

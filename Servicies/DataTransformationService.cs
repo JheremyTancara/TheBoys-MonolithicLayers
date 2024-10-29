@@ -2,18 +2,13 @@ using Api.Data;
 using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Text.Json;
 
 namespace Api.Services
 
 {
     public class DataTransformationService
-    {
-      public async Task<bool> IsBrandNameUnique(DataContext _context, string userName)
-      {
-      var users = await _context.Users.AsNoTracking().ToListAsync();
-      return users.Any(b => string.Equals(b.Username, userName, StringComparison.OrdinalIgnoreCase));
-      }
-    
+    {  
       public static DateTime ConvertToDateTime(string dateString)
       {
           if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
@@ -22,26 +17,6 @@ namespace Api.Services
           }
           
           throw new FormatException("The date is not in a valid format.");
-      }
-
-      public static SubscriptionLevel ConvertToSubscriptionLevel(string subscriptionLevel)
-      {
-          if (Enum.TryParse<SubscriptionLevel>(subscriptionLevel, true, out var level))
-          {
-              return level;
-          }
-          
-          throw new ArgumentException($"The value '{subscriptionLevel}' is not a valid subscription level.");
-      }
-
-      public static ProfileSkin ConvertToProfileSkin(string profileSkin)
-      {
-          if (Enum.TryParse<ProfileSkin>(profileSkin, true, out var skin))
-          {
-              return skin;
-          }
-
-          throw new ArgumentException($"The value '{profileSkin}' is not a valid profile skin.");
       }
 
       public static List<Genre> ParseGenre(string genreString)
@@ -70,6 +45,15 @@ namespace Api.Services
           return genreList;
       }
 
+      public static string ConvertMoviesToString(List<Movie> movies)
+      {
+          return JsonSerializer.Serialize(movies);
+      }
+      
+      public static List<Movie> ConvertStringToMovies(string jsonString)
+      {
+          return JsonSerializer.Deserialize<List<Movie>>(jsonString) ?? new List<Movie>();
+      }
 
       public static ContentType ConvertToContentType(string contentTypeString)
       {
