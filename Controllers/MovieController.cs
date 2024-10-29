@@ -46,7 +46,7 @@ namespace Api.Controllers
             var rToken = Jwt.validarToken(identity, _context);
             if (!rToken.success) return Unauthorized(rToken);
 
-            var usuario = rToken.result;
+            User usuario = rToken.result;
 
             var movieDetail = await movieRepository.GetByIdAsync(id);
 

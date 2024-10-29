@@ -59,6 +59,20 @@ namespace backend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserMovieID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserMovieID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Movies",
                 columns: table => new
                 {
@@ -83,125 +97,46 @@ namespace backend.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Views = table.Column<int>(type: "int", nullable: false),
-                    AgeRestriction = table.Column<int>(type: "int", nullable: false)
+                    AgeRestriction = table.Column<int>(type: "int", nullable: false),
+                    UserMovieID = table.Column<int>(type: "int", nullable: true),
+                    UserMovieID1 = table.Column<int>(type: "int", nullable: true),
+                    UserMovieID2 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movies", x => x.MovieID);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    UserID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Username = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Password = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    SubscriptionLevel = table.Column<int>(type: "int", nullable: false),
-                    ProfilePicture = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.UserID);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UserRecommendedMovies",
-                columns: table => new
-                {
-                    RecommendedMoviesMovieID = table.Column<int>(type: "int", nullable: false),
-                    User1UserID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRecommendedMovies", x => new { x.RecommendedMoviesMovieID, x.User1UserID });
                     table.ForeignKey(
-                        name: "FK_UserRecommendedMovies_Movies_RecommendedMoviesMovieID",
-                        column: x => x.RecommendedMoviesMovieID,
-                        principalTable: "Movies",
-                        principalColumn: "MovieID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRecommendedMovies_Users_User1UserID",
-                        column: x => x.User1UserID,
+                        name: "FK_Movies_Users_UserMovieID",
+                        column: x => x.UserMovieID,
                         principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UserWatchedMovies",
-                columns: table => new
-                {
-                    User2UserID = table.Column<int>(type: "int", nullable: false),
-                    WatchedMoviesMovieID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserWatchedMovies", x => new { x.User2UserID, x.WatchedMoviesMovieID });
+                        principalColumn: "UserMovieID");
                     table.ForeignKey(
-                        name: "FK_UserWatchedMovies_Movies_WatchedMoviesMovieID",
-                        column: x => x.WatchedMoviesMovieID,
-                        principalTable: "Movies",
-                        principalColumn: "MovieID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserWatchedMovies_Users_User2UserID",
-                        column: x => x.User2UserID,
+                        name: "FK_Movies_Users_UserMovieID1",
+                        column: x => x.UserMovieID1,
                         principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UserWatchlist",
-                columns: table => new
-                {
-                    UserID = table.Column<int>(type: "int", nullable: false),
-                    WatchlistMovieID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserWatchlist", x => new { x.UserID, x.WatchlistMovieID });
+                        principalColumn: "UserMovieID");
                     table.ForeignKey(
-                        name: "FK_UserWatchlist_Movies_WatchlistMovieID",
-                        column: x => x.WatchlistMovieID,
-                        principalTable: "Movies",
-                        principalColumn: "MovieID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserWatchlist_Users_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Movies_Users_UserMovieID2",
+                        column: x => x.UserMovieID2,
                         principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserMovieID");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRecommendedMovies_User1UserID",
-                table: "UserRecommendedMovies",
-                column: "User1UserID");
+                name: "IX_Movies_UserMovieID",
+                table: "Movies",
+                column: "UserMovieID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserWatchedMovies_WatchedMoviesMovieID",
-                table: "UserWatchedMovies",
-                column: "WatchedMoviesMovieID");
+                name: "IX_Movies_UserMovieID1",
+                table: "Movies",
+                column: "UserMovieID1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserWatchlist_WatchlistMovieID",
-                table: "UserWatchlist",
-                column: "WatchlistMovieID");
+                name: "IX_Movies_UserMovieID2",
+                table: "Movies",
+                column: "UserMovieID2");
         }
 
         /// <inheritdoc />
@@ -212,15 +147,6 @@ namespace backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Directors");
-
-            migrationBuilder.DropTable(
-                name: "UserRecommendedMovies");
-
-            migrationBuilder.DropTable(
-                name: "UserWatchedMovies");
-
-            migrationBuilder.DropTable(
-                name: "UserWatchlist");
 
             migrationBuilder.DropTable(
                 name: "Movies");
